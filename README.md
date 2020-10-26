@@ -37,6 +37,6 @@ Here is a LIDAR segmentation :
 
 ### 2. Manipulation
 
-Manipuler et comprendres les données ainsi que les outils nécessaires à la réalisation de la mission
+Manipuler les données ainsi que les outils nécessaires à la réalisation de la mission
 
 - 3D-Plot
