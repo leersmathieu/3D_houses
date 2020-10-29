@@ -39,4 +39,55 @@ Here is a LIDAR segmentation :
 
 Manipuler les données ainsi que les outils nécessaires à la réalisation de la mission
 
+- Pandas
+- NumPy
+- Matplotlib
 - 3D-Plot
+- Rasterio
+
+### 3. Interpretation & visualisation
+
+En utilisant les outils précédement cités ainsi que les données (lidar) traitées, construire une représentation 3D d'une adresse entrée par un utilisateur.
+
+## Realisation
+
+Comme à mon habitude je vais tenter de résoudre le problème de manière simple mais efficace.
+
+Je ne vais pas perdre de temps à la mise en place d'un service web ou d'une API, j'ai déjà pas mal de chose à comprendre afin de pouvoir réaliser l'objectif.
+
+Mon but sera donc d'avoir un notebook executable qui remplira l'objectif de la mission en demandant à l'utilisateur un code postal, une rue et un numéro uniquement.
+Celui-ci renverra plusieurs représentation en 3d de la zone indiquée.
+
+### 1. Data
+
+Après avoir récupéré les données nécessaires (+200 GB of tiff file from DSM & DTM) je décide de toutes les ajouter à un dictionnaire, ici je le nomme "RASTERS"
+```py
+# les DTM représentes les données au sol en wallonie
+# les DSM représentes les données au dessus du sol en wallonie
+
+dtm_hainaut = rasterio.open('/home/leers/Project/turing4/DATASET/Wallonia/DTM 2013-2014/DTM_HAINAUT/RELIEF_HAINAUT_MNT_2013_2014.tif')
+dsm_hainaut = rasterio.open('/home/leers/Project/turing4/DATASET/Wallonia/DSM 2013-2014/DSM_HAINAUT/RELIEF_HAINAUT_MNS_2013_2014.tif')
+
+dtm_liege = rasterio.open('/home/leers/Project/turing4/DATASET/Wallonia/DTM 2013-2014/DTM_LIEGE/RELIEF_LIEGE_MNT_2013_2014.tif')
+dsm_liege = rasterio.open('/home/leers/Project/turing4/DATASET/Wallonia/DSM 2013-2014/DSM_LIEGE/RELIEF_LIEGE_MNS_2013_2014.tif')
+
+dtm_namur = rasterio.open('/home/leers/Project/turing4/DATASET/Wallonia/DTM 2013-2014/DTM_NAMUR/RELIEF_NAMUR_MNT_2013_2014.tif')
+dsm_namur = rasterio.open('/home/leers/Project/turing4/DATASET/Wallonia/DSM 2013-2014/DSM_NAMUR/RELIEF_NAMUR_MNS_2013_2014.tif')
+
+dtm_luxembourg = rasterio.open('/home/leers/Project/turing4/DATASET/Wallonia/DTM 2013-2014/DTM_LUXEMBOURG/RELIEF_LUXEMBOURG_MNT_2013_2014.tif')
+dsm_luxembourg = rasterio.open('/home/leers/Project/turing4/DATASET/Wallonia/DSM 2013-2014/DSM_LUXEMBOURG/RELIEF_LUXEMBOURG_MNS_2013_2014.tif')
+
+dtm_brabant = rasterio.open('/home/leers/Project/turing4/DATASET/Wallonia/DTM 2013-2014/DTM_BRABANT_WALLON/RELIEF_BRABANT_WALLON_MNT_2013_2014.tif')
+dsm_brabant = rasterio.open('/home/leers/Project/turing4/DATASET/Wallonia/DSM 2013-2014/DSM_BRABANT_WALLON/RELIEF_BRABANT_WALLON_MNS_2013_2014.tif')
+
+RASTERS = {
+    'Hainaut':[dtm_hainaut, dsm_hainaut],
+    'Liège':[dtm_liege, dsm_liege],
+    'Namur':[dtm_namur, dsm_namur],
+    'Luxembourg':[dtm_luxembourg, dsm_luxembourg],
+    'Brabant-wallon':[dtm_brabant, dsm_brabant]
+}
+```
+
+
+
