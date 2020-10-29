@@ -100,9 +100,10 @@ La première chose à faire pour travailler avec est donc de **créer une foncti
 def crop_raster(tiff, geojson):
 ```
 
-Voir le [NoteBook](/main.ipynb) pour des informations plus détaillées.
+Cette fonction va en plus, augmenter la résolution du fichier de sortie par 4 pour permettre de meilleurs rendu en 3D par la suite.  
+Voir le [NoteBook](/main.ipynb) pour des informations plus détaillées sur les fonctions.
 
-En entrée la fonction prend le fichier tiff, apellé raster, couplé à un geojson pour délimiter la zone de découpe.
+**En entrée la fonction prend le fichier tiff, apellé "raster", couplé à un geojson pour délimiter la zone à découper.**
 
 La prochaine étape consiste donc à créer ce geojson en fonction d'une adresse entrée.
 
@@ -126,7 +127,7 @@ g = geocoder.osm(f'{adress}, {post_code} {city}')
 coord = g.osm['x'],g.osm['y']
 ```
 
-une fois le geojson récupéré je convertis les coordonées en lambert72 pour qu'elle puisse être comprise par rasterio.
+une fois le geojson récupéré dans une variable, je convertis les coordonées en lambert72 pour qu'elle puisse être comprise par ma fonction.
 
 ```py
 inProj = Proj(init='epsg:4326')
@@ -156,10 +157,15 @@ Mon raster et mon geojson étant prêt, je peux maintenant les passer dans la fo
 ```py
 crop_result = crop_raster(dsm,geojson)
 ```
-![raster cropped](img/raster_cropped.png)
+![raster cropped](img/raster_cropped.png)  
+
+Avant et après le UP de la résolution.
+
+![raster cropped](img/raster_cropped_up.png)
+
 
 Il ne reste plus qu'a transformer cette image en représentation 3D.
-Pour ce faire 2 outils ce sont démarquer selon moi.
+Pour ce faire 2 outils ce sont démarqué selon moi.
 
 #### Matplotlib
 
