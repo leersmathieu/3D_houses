@@ -31,7 +31,7 @@ LIDAR is a method to measure distance using light. The device will illuminate a 
 Here is a LIDAR segmentation :
 ```
 
-![Lidar Segmentation](lidar_seg.png)
+![Lidar Segmentation](img/lidar_seg.png)
 
 - Format de fichier  [geoTIFF](https://www.commentcamarche.net/contents/1205-tiff-format-tif)
 
@@ -91,13 +91,76 @@ RASTERS = {
 
 ### 2. Manipulation
 
-Ouvrir un fichier tiff n'est pas une chose aisée et je l'ai appris à mes dépends.
+**Ouvrir** un fichier **tiff** n'est pas une chose aisée et je l'ai appris à mes dépends.
 En effet c'est une très grande "map" détaillée qui ne doit être ouverte de manière brut.
 
-La première chose à faire pour travailler avec est donc de créer une fonction de "découpage" pour n'afficher qu'une partie du gros fichier
+La première chose à faire pour travailler avec est donc de **créer une fonction** de "découpage" pour n'afficher qu'une partie du gros fichier
 
-```pydocstring
+```py
 def crop_raster(tiff, geojson):
 ```
 
 Voir le [NoteBook](/main.ipynb) pour des informations plus détaillées.
+
+En entrée la fonction prend le fichier tiff, apellé raster, couplé à un geojson pour délimiter la zone de découpe.
+
+La prochaine étape consiste donc à créer ce geojson en fonction d'une adresse entrée.
+
+```py
+post_code = input('Enter your postal code -> ')
+
+# Geocoding d'une adresse via geocoder
+g = geocoder.osm(f'belgium, {post_code}')
+county = g.json['county']
+
+# Chargement des données correspondante à la région choisies
+dtm, dsm = RASTERS[county]   
+
+try:
+    city = g.json['city']
+except:
+    city = g.json['town']
+    
+adress = input('Enter your adress (street + number) -> ')
+g = geocoder.osm(f'{adress}, {post_code} {city}')
+coord = g.osm['x'],g.osm['y']
+```
+
+une fois le geojson récupéré je convertis les coordonées en lambert72 pour qu'elle puisse être comprise par rasterio.
+
+```py
+inProj = Proj(init='epsg:4326')
+outProj = Proj(init='epsg:31370')
+
+x1,y1 = coord
+x2,y2 = transform(inProj,outProj,x1,y1)
+```
+
+Enfin je crée une fonction "square" permettant de découper un carré autour des coordonées indiquées.
+Le rayon est choisis par l'utilisateur.
+
+```py
+rayon = input("Rayon autour de l'adresse (ex: 20) -> ")
+rayon = int(rayon)
+
+def square(x,y,r):
+  geojson = [{'type': 'Polygon', 'coordinates': [[(x - r, y - r), (x + r, y - r), (x + r, y + r), (x - r, y + r)]]}]
+  return geojson
+
+geojson = square(x2,y2,rayon)
+```
+
+### 3. Visualisation
+
+Mon raster et mon geojson étant prêt, je peux maintenant les passer dans la fonction "crop_raster" et afficher le résultat de la découpe.
+```py
+crop_result = crop_raster(dsm,geojson)
+```
+![raster cropped](img/raster_cropped.png)
+
+Il ne reste plus qu'a transformer cette image en représentation 3D.
+Pour ce faire 2 outils ce sont démarquer selon moi.
+
+#### Matplotlib
+
+#### Open3D
