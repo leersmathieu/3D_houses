@@ -89,5 +89,15 @@ RASTERS = {
 }
 ```
 
+### 2. Manipulation
 
+Ouvrir un fichier tiff n'est pas une chose aisée et je l'ai appris à mes dépends.
+En effet c'est une très grande "map" détaillée qui ne doit être ouverte de manière brut.
 
+La première chose à faire pour travailler avec est donc de créer une fonction de "découpage" pour n'afficher qu'une partie du gros fichier
+
+```pydocstring
+def crop_raster(tiff, geojson):
+```
+
+Voir le [NoteBook](/main.ipynb) pour des informations plus détaillées.
