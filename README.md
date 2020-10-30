@@ -157,11 +157,11 @@ Mon raster et mon geojson étant prêt, je peux maintenant les passer dans la fo
 ```py
 crop_result = crop_raster(dsm,geojson)
 ```
-![raster cropped](img/raster_cropped.png)  
+![raster cropped](img/raster_ind.png)  
 
 Avant et après le UP de la résolution.
 
-![raster cropped](img/raster_cropped_up.png)
+![raster cropped](img/raster_ind_up.png)
 
 
 Il ne reste plus qu'a transformer cette image en représentation 3D.
@@ -169,4 +169,11 @@ Pour ce faire 2 outils ce sont démarqué selon moi.
 
 #### Matplotlib
 
+![plt ind](img/plt_ind.png)  
+![plt ind up](img/plt_ind_2.png)
+
 #### Open3D
+
+![open3d ind short](img/open3d_ind.png)
+![open3d ind](img/open3d_ind_3.png)
+![open3d ind long](img/open3d_ind_2.png)
