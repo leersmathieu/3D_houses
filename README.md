@@ -100,7 +100,7 @@ La première chose à faire pour travailler avec est donc de **créer une foncti
 def crop_raster(tiff, geojson):
 ```
 
-Cette fonction va en plus, augmenter la résolution du fichier de sortie par 4 pour permettre de meilleurs rendu en 3D par la suite.  
+Cette fonction va en plus, augmenter la résolution du fichier de sortie par 16 pour permettre de meilleurs rendu en 3D par la suite.  
 Voir le [NoteBook](/main.ipynb) pour des informations plus détaillées sur les fonctions.
 
 **En entrée la fonction prend le fichier tiff, apellé "raster", couplé à un geojson pour délimiter la zone à découper.**
@@ -169,11 +169,78 @@ Pour ce faire 2 outils ce sont démarqué selon moi.
 
 #### Matplotlib
 
+A partir d'ici travailler avec matplotlib est très facile.
+
+```py
+elevation_mask = crop_raster(dsm, geojson)[0]
+
+z = elevation_mask
+x, y = np.meshgrid(np.arange(z.shape[0]), np.arange(z.shape[1]))
+
+fig = plt.figure(figsize=(28, 10))
+ax = fig.add_subplot(111, projection='3d')
+ax.set_zlim(z_min, z_max)
+ax.plot_surface(x, y, z)
+
+plt.show()
+```
+
+En quelques lignes nous pouvons afficher un premier rendu
+
 ![plt ind](img/plt_ind.png)  
+
+En faisant quelques réglages on peut tout aussi facilement améliorer le rendu, voici un exemple :  
+
+```py
+# Un autre rendu matplotlib avec des règlages différents
+
+fig = plt.figure(figsize=(14, 14))
+ax = fig.add_subplot(111, projection='3d')
+ax.set_zlim(z_min, z_max)
+ax.plot_surface(x, y, z, cmap=cm.viridis, antialiased=False)
+
+ax.axis("off")
+ax.set_facecolor('white')
+ax.azim = 280
+ax.elev = 45
+
+plt.show()
+```
+
 ![plt ind up](img/plt_ind_2.png)
 
 #### Open3D
 
+Pour réaliser un rendu avec open 3D je vais avoir besoin d'une fonction qui permet de convertir un raster en données x, y, z.  
+Je récupère ensuite les données dans un dataframe que je convertis en tableau NumPy 
+
+```py
+# Conversion du raster en coordonées x,y,z
+raster_converted = raster2xyz.translate_from_cropped(crop_result)
+
+# Récupération du dataframe
+df = raster_converted[0]
+
+# transformation du dataframe en numpy array
+np_array = df.to_numpy()
+```
+(Voir la classe de function "raster2xyz" dans le [NoteBook](/main.ipynb) pour plus d'information à ce sujet )
+
+Il ne reste plus qu'a créer le "nuage de points" et lancer la visualisation avec open3D.
+
+```py
+# creation d'un nuage de points
+pcd = o3d.geometry.PointCloud()
+
+# ajouts de nos points dans le nuage
+pcd.points = o3d.utility.Vector3dVector(np_array)
+
+# visualisation 3d
+o3d.visualization.draw_geometries([pcd])
+```
 ![open3d ind short](img/open3d_ind.png)
 ![open3d ind](img/open3d_ind_3.png)
 ![open3d ind long](img/open3d_ind_2.png)
+
+Pour encore plus d'exemple de rendu, rendez vous [ici](img/)
+
