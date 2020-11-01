@@ -14,7 +14,7 @@ Comprendre les données pour pouvoir les utiliser
 
 - Appréhender les dossiers DSM & DTM
 - Appréhender LIDAR
-- Apprendre à utiliser les fichier geoTIFF
+- Apprendre à utiliser les fichiers geoTIFF
 
 Nettoyer les données
 
@@ -45,25 +45,25 @@ Manipuler les données ainsi que les outils nécessaires à la réalisation de l
 - 3D-Plot
 - Rasterio
 
-### 3. Interpretation & visualisation
+### 3. Interprétation & visualisation
 
 En utilisant les outils précédement cités ainsi que les données (lidar) traitées, construire une représentation 3D d'une adresse entrée par un utilisateur.
 
-## Realisation
+## Réalisation
 
-Comme à mon habitude je vais tenter de résoudre le problème de manière simple mais efficace.
+Comme à mon habitude, je vais tenter de résoudre le problème de manière simple mais efficace.
 
-Je ne vais pas perdre de temps à la mise en place d'un service web ou d'une API, j'ai déjà pas mal de chose à comprendre afin de pouvoir réaliser l'objectif.
+Je ne vais pas perdre de temps à la mise en place d'un service web ou d'une API. J'ai déjà pas mal de choses à comprendre afin de pouvoir réaliser l'objectif.
 
-Mon but sera donc d'avoir un notebook executable qui remplira l'objectif de la mission en demandant à l'utilisateur un code postal, une rue et un numéro uniquement.
-Celui-ci renverra plusieurs représentation en 3d de la zone indiquée.
+Mon but sera donc d'avoir un notebook exécutable qui remplira l'objectif de la mission en demandant à l'utilisateur un code postal, une rue et un numéro uniquement.
+Celui-ci renverra plusieurs représentations en 3d de la zone indiquée.
 
 ### 1. Data
 
-Après avoir récupéré les données nécessaires (+200 GB of tiff file from DSM & DTM) je décide de toutes les ajouter à un dictionnaire, ici je le nomme "RASTERS"
+Après avoir récupéré les données nécessaires (+200 GB of tiff file from DSM & DTM), je décide de toutes les ajouter à un dictionnaire. Ici je le nomme "RASTERS"
 ```py
-# les DTM représentes les données au sol en wallonie
-# les DSM représentes les données au dessus du sol en wallonie
+# les DTM représentent les données au sol en wallonie
+# les DSM représentent les données au dessus du sol en wallonie
 
 dtm_hainaut = rasterio.open('/home/leers/Project/turing4/DATASET/Wallonia/DTM 2013-2014/DTM_HAINAUT/RELIEF_HAINAUT_MNT_2013_2014.tif')
 dsm_hainaut = rasterio.open('/home/leers/Project/turing4/DATASET/Wallonia/DSM 2013-2014/DSM_HAINAUT/RELIEF_HAINAUT_MNS_2013_2014.tif')
@@ -92,7 +92,7 @@ RASTERS = {
 ### 2. Manipulation
 
 **Ouvrir** un fichier **tiff** n'est pas une chose aisée et je l'ai appris à mes dépends.
-En effet c'est une très grande "map" détaillée qui ne doit être ouverte de manière brut.
+En effet, c'est une très grande "map" détaillée qui ne doit être ouverte de manière brut.
 
 La première chose à faire pour travailler avec est donc de **créer une fonction** de "découpage" pour n'afficher qu'une partie du gros fichier
 
@@ -100,10 +100,10 @@ La première chose à faire pour travailler avec est donc de **créer une foncti
 def crop_raster(tiff, geojson):
 ```
 
-Cette fonction va en plus, augmenter la résolution du fichier de sortie par 16 pour permettre de meilleurs rendu en 3D par la suite.  
+Cette fonction va en plus augmenter la résolution du fichier de sortie par 16 pour permettre de meilleurs rendus en 3D par la suite.  
 Voir le [NoteBook](/main.ipynb) pour des informations plus détaillées sur les fonctions.
 
-**En entrée la fonction prend le fichier tiff, apellé "raster", couplé à un geojson pour délimiter la zone à découper.**
+**En entrée la fonction prend le fichier tiff, appelé "raster", couplé à un geojson pour délimiter la zone à découper.**
 
 La prochaine étape consiste donc à créer ce geojson en fonction d'une adresse entrée.
 
@@ -114,7 +114,7 @@ post_code = input('Enter your postal code -> ')
 g = geocoder.osm(f'belgium, {post_code}')
 county = g.json['county']
 
-# Chargement des données correspondante à la région choisies
+# Chargement des données correspondantes à la région choisie
 dtm, dsm = RASTERS[county]   
 
 try:
@@ -127,8 +127,8 @@ g = geocoder.osm(f'{adress}, {post_code} {city}')
 coord = g.osm['x'],g.osm['y']
 ```
 
-Pour ce faire je vais pratiquer du géocodage* ici via la librairie geocoder.  
-une fois les coordonées de l'adresse entrée récupéré dans une variable, je les convertis en lambert72 pour qu'elle puisse être comprise par ma fonction.
+Pour ce faire, je vais pratiquer du géocodage* ici via la librairie geocoder.  
+Une fois les coordonées de l'adresse entrée récupérées dans une variable, je les convertis en lambert72 pour qu'elles puissent être comprises par ma fonction.
 
 (*) *Le géocodage consiste à affecter des coordonnées géographiques (longitude/latitude) à une adresse postale.*
 ```py
@@ -139,10 +139,10 @@ x1,y1 = coord
 x2,y2 = transform(inProj,outProj,x1,y1)
 ```
 
-Enfin je crée une fonction "square" permettant de découper un carré autour des coordonées indiquées.
+Enfin, je crée une fonction "square" permettant de découper un carré autour des coordonées indiquées.
 Le rayon est choisis plus tôt par l'utilisateur.
 
-Cette fonction me retourne en fait mon geojson.
+Cette fonction retourne en fait mon geojson.
 
 ```py
 rayon = input("Rayon autour de l'adresse (ex: 20) -> ")
@@ -157,7 +157,7 @@ geojson = square(x2,y2,rayon)
 
 ### 3. Visualisation
 
-Mon raster et mon geojson étant prêt, je peux maintenant les passer dans la fonction "crop_raster" et afficher le résultat de la découpe.
+Mon raster et mon geojson étant prêts, je peux maintenant les passer dans la fonction "crop_raster" et afficher le résultat de la découpe.
 ```py
 crop_result = crop_raster(dsm,geojson)
 ```
@@ -168,12 +168,12 @@ Avant et après le UP de la résolution.
 ![raster cropped](img/raster_ind_up.png)
 
 
-Il ne reste plus qu'a transformer cette image en représentation 3D.
-Pour ce faire 2 outils ce sont démarqué selon moi.
+Il ne reste plus qu'à transformer cette image en représentation 3D.
+Pour ce faire, 2 outils ce sont démarqués selon moi.
 
 #### Matplotlib
 
-A partir d'ici travailler avec matplotlib est très facile.
+A partir d'ici, travailler avec matplotlib est très facile.
 
 ```py
 elevation_mask = crop_raster(dsm, geojson)[0]
@@ -189,11 +189,11 @@ ax.plot_surface(x, y, z)
 plt.show()
 ```
 
-En quelques lignes nous pouvons afficher un premier rendu
+En quelques lignes, nous pouvons afficher un premier rendu.
 
 ![plt ind](img/plt_ind.png)  
 
-En faisant quelques réglages on peut tout aussi facilement améliorer le rendu, voici un exemple :  
+En faisant quelques réglages, on peut tout aussi facilement améliorer le rendu, voici un exemple :  
 
 ```py
 # Un autre rendu matplotlib avec des règlages différents
@@ -215,7 +215,7 @@ plt.show()
 
 #### Open3D
 
-Pour réaliser un rendu avec open 3D je vais avoir besoin d'une fonction qui permet de convertir un raster en données x, y, z.  
+Pour réaliser un rendu avec open 3D, je vais avoir besoin d'une fonction qui permet de convertir un raster en données x, y, z.  
 Je récupère ensuite les données dans un dataframe que je convertis en tableau NumPy 
 
 ```py
@@ -228,9 +228,9 @@ df = raster_converted[0]
 # transformation du dataframe en numpy array
 np_array = df.to_numpy()
 ```
-(Voir la classe de function "raster2xyz" dans le [NoteBook](/main.ipynb) pour plus d'information à ce sujet )
+(Voir la classe de fonction "raster2xyz" dans le [NoteBook](/main.ipynb) pour plus d'informations à ce sujet )
 
-Il ne reste plus qu'a créer le "nuage de points" et lancer la visualisation avec open3D.
+Il ne reste plus qu'à créer le "nuage de points" et lancer la visualisation avec open3D.
 
 ```py
 # creation d'un nuage de points
@@ -246,5 +246,5 @@ o3d.visualization.draw_geometries([pcd])
 ![open3d ind](img/open3d_ind_3.png)
 ![open3d ind long](img/open3d_ind_2.png)
 
-Pour encore plus d'exemple de rendu, rendez vous [ici](img/)
+Pour encore plus d'exemples de rendus, rendez-vous [ici](img/)
 
