@@ -127,8 +127,10 @@ g = geocoder.osm(f'{adress}, {post_code} {city}')
 coord = g.osm['x'],g.osm['y']
 ```
 
-une fois le geojson récupéré dans une variable, je convertis les coordonées en lambert72 pour qu'elle puisse être comprise par ma fonction.
+Pour ce faire je vais pratiquer du géocodage* ici via la librairie geocoder.  
+une fois les coordonées de l'adresse entrée récupéré dans une variable, je les convertis en lambert72 pour qu'elle puisse être comprise par ma fonction.
 
+(*) *Le géocodage consiste à affecter des coordonnées géographiques (longitude/latitude) à une adresse postale.*
 ```py
 inProj = Proj(init='epsg:4326')
 outProj = Proj(init='epsg:31370')
@@ -138,7 +140,9 @@ x2,y2 = transform(inProj,outProj,x1,y1)
 ```
 
 Enfin je crée une fonction "square" permettant de découper un carré autour des coordonées indiquées.
-Le rayon est choisis par l'utilisateur.
+Le rayon est choisis plus tôt par l'utilisateur.
+
+Cette fonction me retourne en fait mon geojson.
 
 ```py
 rayon = input("Rayon autour de l'adresse (ex: 20) -> ")
