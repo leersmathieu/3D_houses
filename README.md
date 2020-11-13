@@ -1,7 +1,7 @@
 # 3D_houses
 Type of Challenge: Learning &amp; Consolidation
 
-[Link](https://github.com/leersmathieu/CRL-Turing-4.22/tree/master/Projects/3.3D_houses_numpy) to the descriptive challenge 
+[Link](https://github.com/leersmathieu/3D_houses/blob/main/Challenge.md) to the descriptive challenge 
 
 ## The Mission
 
