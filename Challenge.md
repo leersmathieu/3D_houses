@@ -49,7 +49,7 @@ LIDAR is a method to measure distance using light. The device will illuminate a 
 
 Here is a LIDAR segmentation :
 
-![Lidar Segmentation](lidar_seg.png)
+![Lidar Segmentation](img/lidar_seg.png)
 
 With those points clouds we can easily identify houses, vegetation, roads, etc...
 
